@@ -2,8 +2,8 @@ include_recipe "lvm::default"
 if(node[:ec2][:instance_type] == 'm1.xlarge')
   # First device comes mounted
   if(node[:platform] == 'amazon')
-    mount "/dev/sdb" do
-      device "/dev/sdb"
+    mount "/dev/xvdb" do
+      device "/dev/xvdb"
       action :umount
     end
   end
