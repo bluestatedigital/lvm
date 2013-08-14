@@ -1,5 +1,5 @@
 include_recipe "lvm::default"
-if(node[:ec2][:instance_type] == 'm1.xlarge') do
+if(node[:ec2][:instance_type] == 'm1.xlarge')
   lvm_volume_group 'vg00' do
     physical_volumes [ '/dev/sdb', '/dev/sdc', '/dev/sdd', '/dev/sde' ]
     logical_volume 'data1' do
