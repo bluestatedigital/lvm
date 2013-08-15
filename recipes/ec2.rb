@@ -5,6 +5,10 @@ if(node[:ec2][:instance_type] == 'm1.xlarge')
   # Chef's mount resource seems to balk at this, so we're scripting it
   #
    
+  mount "/dev/sdb" do
+    device "/dev/sdb"
+    action [:umount, :disable]
+  end 
   bash "unmount_default_ephemeral" do
     code <<-EOH
       umount /media/ephemeral0
