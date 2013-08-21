@@ -1,49 +1,62 @@
-include_recipe "lvm::default"
+# Cookbook Name:: lvm
+# Recipe:: ec2-clusterdb-lvm-ephemeral
 
-if(node[:ec2][:instance_type] =~ /(cc2\.8|m1\.)xlarge/)
-  #
-  # Unmount the Auto-mounted ephemerial drive
-  # Chef's mount resource seems to balk at this, so we're scripting it
-  #
-  if(node[:platform] == 'centos')
-    mount "/dev/xvdb" do
-      device "/dev/xvdb"
-      action [:umount, :disable]
-    end
+include_recipe 'lvm'
 
-    bash "unmount_default_ephemeral" do
-      code <<-EOH
-        umount /mnt/ephemeral
-      EOH
-      user "root"
-      cwd "/tmp"
-      only_if "df | grep xvdb"
-    end
-  end
+pod_std = '/dev/mapper/vg0-data1'
+pod_bak = '/dev/mapper/vgbackup-lvbackup'
+devs = ['/dev/sdb', '/dev/sdc', '/dev/sdd', '/dev/sde'].sort
 
-  if(node[:platform] == 'amazon')
-    mount "/dev/sdb" do
-      device "/dev/sdb"
-      action [:umount, :disable]
-    end
-
-    bash "unmount_default_ephemeral" do
-      code <<-EOH
-        umount /media/ephemeral0
-      EOH
-      user "root"
-      cwd "/tmp"
-      only_if "df | grep sdb"
-    end
-  end
-
-  lvm_volume_group 'vg0' do
-    physical_volumes [ '/dev/xvdb', '/dev/xvdc', '/dev/xvdd', '/dev/xvde' ]
-    logical_volume 'data1' do
-      size '75%VG'
-      filesystem 'ext4'
-      mount_point :location => '/media/ephemeral0', :options => 'noatime,nodiratime'
-      stripes 4
-    end
+begin
+  # already a standard db pod
+  return if node[:filesystem][pod_std]
+rescue ArgumentError
+  begin
+    # already a backup db pod
+    return if node[:filesystem][pod_bak]
+  rescue ArgumentError
   end
 end
+
+mount devs[0] do
+  device devs[0]
+  action [:umount, :disable]
+end
+bash "unmount_default_ephemeral" do
+  code <<-EOH
+    umount /media/ephemeral0
+  EOH
+  user "root"
+  cwd "/tmp"
+  only_if "df | grep sdb"
+end
+
+lvm_volume_group 'vg0' do
+  physical_volumes devs
+  logical_volume 'data1' do
+    size '85%VG'
+    filesystem 'ext4'
+    mount_point :location => '/media/ephemeral0',
+                :options => 'noatime,nodiratime',
+                :dump => '0',
+                :pass => '2'
+    stripes devs.count
+  end
+end
+
+mount "/media/ephemeral0" do
+  device "/dev/mapper/vg0-data1"
+  fstype "ext4"
+  options "rw,noatime,nodiratime"
+  action [:mount, :enable]
+end
+bash "mount_default_ephemeral" do
+  code <<-EOH
+    mount -t ext4 -O rw,noatime,nodiratime /dev/mapper/vg0-data1 /media/ephemeral0
+  EOH
+  user "root"
+  cwd "/tmp"
+  not_if "df | grep vg0-data1"
+end
+
+
