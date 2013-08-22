@@ -18,13 +18,9 @@ rescue ArgumentError
   end
 end
 
-mount devs[0] do
-  device devs[0]
-  action [:umount, :disable]
-end
-bash "unmount_default_ephemeral" do
+bash "unmount_ephemeral" do
   code <<-EOH
-    umount /media/ephemeral0
+    umount /dev/xvdb
   EOH
   user "root"
   cwd "/tmp"
@@ -36,7 +32,7 @@ lvm_volume_group 'vg0' do
   logical_volume 'data1' do
     size '85%VG'
     filesystem 'ext4'
-    mount_point :location => '/media/ephemeral0',
+    mount_point :location => '/mnt/ephemeral',
                 :options => 'noatime,nodiratime',
                 :dump => '0',
                 :pass => '2'
@@ -44,15 +40,9 @@ lvm_volume_group 'vg0' do
   end
 end
 
-mount "/media/ephemeral0" do
-  device "/dev/mapper/vg0-data1"
-  fstype "ext4"
-  options "rw,noatime,nodiratime"
-  action [:mount, :enable]
-end
-bash "mount_default_ephemeral" do
+bash "mount_ephemeral" do
   code <<-EOH
-    mount -t ext4 -O rw,noatime,nodiratime /dev/mapper/vg0-data1 /media/ephemeral0
+    mount -t ext4 -O rw,noatime,nodiratime /dev/mapper/vg0-data1 /mnt/ephemeral
   EOH
   user "root"
   cwd "/tmp"
