@@ -5,7 +5,7 @@ include_recipe 'lvm'
 
 pod_std = '/dev/mapper/vg0-data1'
 pod_bak = '/dev/mapper/vgbackup-lvbackup'
-devs = ['/dev/sdb', '/dev/sdc', '/dev/sdd', '/dev/sde'].sort
+devs = ['/dev/xvdb', '/dev/xvdc', '/dev/xvdd', '/dev/xvde'].sort
 
 begin
   # already a standard db pod
@@ -28,7 +28,7 @@ bash "unmount_default_ephemeral" do
   EOH
   user "root"
   cwd "/tmp"
-  only_if "df | grep sdb"
+  only_if "df | grep xvdb"
 end
 
 lvm_volume_group 'vg0' do
