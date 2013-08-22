@@ -34,8 +34,8 @@ lvm_volume_group 'vg0' do
     filesystem 'ext4'
     mount_point :location => '/mnt/ephemeral',
                 :options => 'noatime,nodiratime',
-                :dump => '0',
-                :pass => '2'
+                :dump => 0,
+                :pass => 2
     stripes devs.count
   end
 end
