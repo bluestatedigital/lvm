@@ -1,20 +1,18 @@
 # Cookbook Name:: lvm
 # Recipe:: ec2-db-ephemeral
 
+# chef's mount resource does not work consistently
+
 include_recipe 'lvm'
 devs = ['/dev/xvdb', '/dev/xvdc', '/dev/xvdd', '/dev/xvde'].sort
 
 # do nothing if volume group already present
 unless %x{df} =~ /vg(0|backup)-(data1|lvbackup)/
 
-  mount "disable_default_ephemeral" do
-    action :disable
-    device "/dev/xvdb"
-  end
-
   bash "unmount_default_ephemeral" do
     code <<-EOH
       umount /dev/xvdb
+      sed -i '/\dev\/\(xv\|s\)db/d' /etc/fstab
     EOH
     user "root"
     cwd "/tmp"
