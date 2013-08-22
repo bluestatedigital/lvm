@@ -18,7 +18,12 @@ rescue ArgumentError
   end
 end
 
-bash "unmount_ephemeral" do
+mount "disable_default_ephemeral" do
+  action :disable
+  device "/dev/xvdb"
+end
+
+bash "unmount_default_ephemeral" do
   code <<-EOH
     umount /dev/xvdb
   EOH
@@ -32,15 +37,12 @@ lvm_volume_group 'vg0' do
   logical_volume 'data1' do
     size '85%VG'
     filesystem 'ext4'
-    mount_point :location => '/mnt/ephemeral',
-                :options => 'noatime,nodiratime',
-                :dump => 0,
-                :pass => 2
+    mount_point :location => '/mnt/ephemeral', :options => 'noatime,nodiratime'
     stripes devs.count
   end
 end
 
-bash "mount_ephemeral" do
+bash "mount_lvm_ephemeral" do
   code <<-EOH
     mount -t ext4 -O rw,noatime,nodiratime /dev/mapper/vg0-data1 /mnt/ephemeral
   EOH
