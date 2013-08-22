@@ -12,7 +12,7 @@ unless %x{df} =~ /vg(0|backup)-(data1|lvbackup)/
   bash "unmount_default_ephemeral" do
     code <<-EOH
       umount /dev/xvdb
-      sed -i '/\dev\/\(xv\|s\)db/d' /etc/fstab
+      sed -i '/\dev\/\\(xv\\|s\\)db/d' /etc/fstab
     EOH
     user "root"
     cwd "/tmp"
