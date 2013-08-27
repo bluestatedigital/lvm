@@ -13,7 +13,7 @@ if(node[:ec2])
       mount "/dev/xvdb" do
         device "/dev/xvdb"
         action [:umount, :disable]
-      end.
+      end
 
       bash "unmount_default_ephemeral" do
         code <<-EOH
@@ -30,7 +30,7 @@ if(node[:ec2])
       mount "/dev/sdb" do
         device "/dev/sdb"
         action [:umount, :disable]
-      end.
+      end
 
       bash "unmount_default_ephemeral" do
         code <<-EOH
