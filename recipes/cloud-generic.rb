@@ -38,7 +38,7 @@ if(node[:ec2])
         EOH
         user "root"
         cwd "/tmp"
-        only_if "df | grep sdb"
+        only_if "df | grep xvdb"
       end
     end
 
