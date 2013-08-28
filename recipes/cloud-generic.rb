@@ -46,7 +46,7 @@ if(node[:ec2])
     lvm_volume_group 'vg0' do
       physical_volumes [ '/dev/xvdb', '/dev/xvdc', '/dev/xvdd', '/dev/xvde' ]
       logical_volume 'data1' do
-        size '75%VG'
+        size '85%VG'
         filesystem 'ext4'
         mount_point :location => '/media/ephemeral0', :options => 'noatime,nodiratime'
         stripes 4
