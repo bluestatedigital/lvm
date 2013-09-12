@@ -4,18 +4,19 @@
 include_recipe "lvm::default"
 
 if node[:ec2]
-    # This is the maximum number of ephemeral drives any instance can allocate.
-    max_ephemeral_count = 4
-    ephemeral_drives = []
+  # This is the maximum number of ephemeral drives any instance can allocate.
+  max_ephemeral_count = 4
+  ephemeral_drives = []
 
-    # Try and gather all of the assigned ephemeral drives.
-    max_ephemeral_count.times do |i|
-        s = "block_device_mapping_ephemeral#{i}".to_sym
-        if node[:ec2][s]
-            ephemeral_drives << "/dev/#{node[:ec2][s]}"
-        end
+  # Try and gather all of the assigned ephemeral drives.
+  max_ephemeral_count.times do |i|
+    s = "block_device_mapping_ephemeral#{i}".to_sym
+    if node[:ec2][s]
+      ephemeral_drives << "/dev/#{node[:ec2][s]}"
     end
+  end
 
+  if !ephemeral_drives.empty?
     # Unmount the auto-mounted ephemeral drive.  Seems to be the first one, for whatever reason.
     mount "/dev/sdb" do
       device "/dev/sdb"
@@ -38,7 +39,7 @@ if node[:ec2]
         size '85%VG'
         filesystem 'ext4'
         mount_point :location => '/media/ephemeral0', :options => 'noatime,nodiratime'
-        stripes 4
+        stripes ephemeral_drives.length
       end
     end
   end
