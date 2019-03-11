@@ -19,3 +19,12 @@
 package "lvm2"
 
 chef_gem 'di-ruby-lvm'
+
+gem_attribute_dir = "/opt/chef/embedded/lib/ruby/gems/1.9.1/gems/di-ruby-lvm-attrib-0.0.27/lib/lvm/attributes"
+gem_attribute_ver = "2.02.180(2)"
+
+remote_directory "#{gem_attribute_dir}/#{gem_attribute_ver}" do
+    action :create_if_missing
+    source "#{gem_attribute_ver}"
+    only_if { ::File.directory?(gem_attribute_dir) }
+end
