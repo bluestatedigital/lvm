@@ -1,5 +1,5 @@
 #
-# Cookbook Name:: lvm
+# Cookbook Name:: bsd_lvm
 # Recipe:: default
 #
 # Copyright 2009-2013, Opscode, Inc.

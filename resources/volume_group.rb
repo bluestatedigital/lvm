@@ -24,7 +24,7 @@ attribute :physical_extent_size, :kind_of => String, :regex => /\d+[bBsSkKmMgGtT
 
 def logical_volume name, &block
     Chef::Log.debug "Creating logical volume #{name}"
-    volume = lvm_logical_volume name, &block
+    volume = bsd_lvm_logical_volume name, &block
     volume.action :nothing
     @logical_volumes << volume
     volume

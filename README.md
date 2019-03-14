@@ -3,6 +3,8 @@ Description
 
 Installs lvm2 package and includes resources for managing LVM.
 
+This is the BSD fork of recipe that has diverged from upstream.
+
 Requirements
 ============
 
@@ -16,7 +18,7 @@ Resources/Providers
 There are three LWRPs in the LVM cookbook that can be used to perform operations
 with the Logical Volume Manager.
 
-`lvm_physical_volume`
+`bsd_lvm_physical_volume`
 ---------------------
 
 Manages LVM physical volumes.
@@ -32,9 +34,9 @@ Manages LVM physical volumes.
 
 ### Example
 
-    lvm_physical_volume '/dev/sda'
+    bsd_lvm_physical_volume '/dev/sda'
 
-`lvm_logical_volume`
+`bsd_lvm_logical_volume`
 --------------------
 
 Manages LVM logical volumes
@@ -47,7 +49,7 @@ Manages LVM logical volumes
 
 - `name` - The name of the logical volume. Required, name parameter.
 - `group` - The volume group in which to create the new volume. Required unless
-  the volume is declared inside of an `lvm_volume_group` block (<a
+  the volume is declared inside of an `bsd_lvm_volume_group` block (<a
   href='#volume_group'>see below</a>).
 - `size` - The size of the volume. This can be any of the size specifications
   supported by LVM&mdash;SI bytes (e.g. 10G), physical extents, or percentages
@@ -74,7 +76,7 @@ Manages LVM logical volumes
 
 ### Example
 
-    lvm_logical_volume 'home' do
+    bsd_lvm_logical_volume 'home' do
         group 'vg00'
         size '25%VG'
         filesystem 'ext4'
@@ -84,7 +86,7 @@ Manages LVM logical volumes
     end
 
 <a name='volume_group' />
-`lvm_volume_group`
+`bsd_lvm_volume_group`
 ------------------
 
 Manages LVM volume groups.
@@ -100,13 +102,13 @@ Manages LVM volume groups.
   haven't already been initialized as physical volumes, they will be
   initialized automatically. Required.
 - `physical_extent_size` - The physical extent size for the volume group.
-- `logical_volume` - A shortcut for creating a new `lvm_logical_volume`
+- `logical_volume` - A shortcut for creating a new `bsd_lvm_logical_volume`
   definition. The logical volumes will be created in the order they are
   declared.
 
 ### Example
 
-    lvm_volume_group 'vg00' do
+    bsd_lvm_volume_group 'vg00' do
         physical_volumes [ /dev/sda, /dev/sdb, /dev/sdc ]
         logical_volume 'logs' do
             size '1G'
@@ -133,7 +135,7 @@ Note that this cookbook depends on the
 [di-ruby-lvm](https://github.com/DrillingInfo/di-ruby-lvm) and
 [di-ruby-lvm-attrib](https://github.com/DrillingInfo/di-ruby-lvm-attrib) gems.
 The di-ruby-lvm-attrib gem in particular is a common cause of failures when
-using the providers. If you get a failure with an error message similar to 
+using the providers. If you get a failure with an error message similar to
 
 ``` No such file or directory - /opt/chef/.../di-ruby-lvm-attrib-0.0.3/lib/lvm/attributes/2.02.86(2)/lvs.yaml```
 

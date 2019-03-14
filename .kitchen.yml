@@ -29,5 +29,5 @@ platforms:
 
 suites:
 - name: default
-  run_list: ["recipe[lvm]"]
+  run_list: ["recipe[bsd_lvm]"]
   attributes: {}

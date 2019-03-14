@@ -1,7 +1,7 @@
-# Cookbook Name:: lvm
+# Cookbook Name:: bsd_lvm
 # Recipe:: cloud-generic
 
-include_recipe "lvm::default"
+include_recipe "bsd_lvm::default"
 
 ephemeral_drives = []
 
@@ -43,7 +43,7 @@ end
 # Now assemble our VG/LV if we found any ephemeral drives.
 if !ephemeral_drives.empty?
   # Now create our volume group based on all the ephemeral drives present.
-  lvm_volume_group 'vg0' do
+  bsd_lvm_volume_group 'vg0' do
     physical_volumes ephemeral_drives
     logical_volume 'data1' do
       size '85%VG'
@@ -53,4 +53,3 @@ if !ephemeral_drives.empty?
     end
   end
 end
-

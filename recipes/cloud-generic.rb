@@ -1,7 +1,7 @@
-# Cookbook Name:: lvm
+# Cookbook Name:: bsd_lvm
 # Recipe:: ec2-db-ephemeral
 
-include_recipe "lvm::default"
+include_recipe "bsd_lvm::default"
 
 if(node[:ec2])
   if(node[:ec2][:instance_type] == 'm1.xlarge' || node[:ec2][:instance_type] == 'cc2.8xlarge')
@@ -26,7 +26,7 @@ if(node[:ec2])
     end
 
     # First device comes mounted
-    lvm_volume_group 'vg0' do
+    bsd_lvm_volume_group 'vg0' do
       physical_volumes [ '/dev/xvdb', '/dev/xvdc', '/dev/xvdd', '/dev/xvde' ]
       logical_volume 'data1' do
         size '85%VG'
@@ -37,4 +37,3 @@ if(node[:ec2])
     end
   end
 end
-
